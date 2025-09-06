@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawMatch - Find Your Perfect Dog</title>
+<style>
+/* (styles unchanged; keep your existing CSS) */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:2rem 1rem}
+.container{max-width:980px;margin:0 auto}
+.header{text-align:center;margin-bottom:1.5rem;color:#fff}
+.header h1{font-size:3rem;font-weight:700;margin-bottom:.25rem;text-shadow:0 4px 8px rgba(0,0,0,.2)}
+.header .tagline{font-size:1.05rem;opacity:.9;font-weight:300}
+.status-bar{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:.75rem 0 1.25rem}
+.pill{padding:.35rem .7rem;border-radius:999px;font-size:.9rem;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff}
+.pill.ok{background:#10b981;color:#062e1a;border-color:#34d399}
+.pill.warn{background:#fde68a;color:#78350f;border-color:#fbbf24}
+.pill.err{background:#fecaca;color:#7f1d1d;border-color:#f87171}
+.main-card{background:#fff;border-radius:20px;padding:1.5rem;box-shadow:0 20px 40px rgba(0,0,0,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2)}
+.upload-section{background:linear-gradient(135deg,#f8f9ff 0%,#e8f2ff 100%);border-radius:16px;padding:1.25rem;border:2px dashed #c7d2fe;text-align:center}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+@media(max-width:900px){.upload-grid{grid-template-columns:1fr}}
+.dropzone{border:2px dashed #a5b4fc;border-radius:12px;padding:1.25rem;background:#f8fafc}
+.dropzone.drag{background:#eef2ff;border-color:#6366f1}
+.file-input-wrapper{position:relative;display:inline-block;margin:.5rem 0 0}
+.file-input-wrapper input[type=file]{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer}
+.file-input-label{display:inline-block;padding:.8rem 1.4rem;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:50px;cursor:pointer;font-weight:600;box-shadow:0 8px 20px rgba(102,126,234,.3)}
+.action-buttons{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.btn{padding:.7rem 1.25rem;border:none;border-radius:50px;font-weight:600;cursor:pointer;transition:.2s;font-size:1rem;min-width:160px}
+.btn-primary{background:linear-gradient(135deg,#10b981,#047857);color:#fff;box-shadow:0 8px 20px rgba(16,185,129,.3)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 8px 20px rgba(245,158,11,.3)}
+.btn-secondary:hover{transform:translateY(-2px)}
+.loading{display:inline-block;width:18px;height:18px;border:2px solid #fff;border-radius:50%;border-top-color:transparent;animation:spin 1s linear infinite;vertical-align:-3px;margin-right:.4rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-section{display:flex;gap:1.25rem;margin:1.25rem 0;align-items:flex-start;flex-wrap:wrap}
+.preview-container{flex:1;min-width:280px}
+.preview-image{width:100%;max-height:320px;object-fit:cover;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1);border:3px solid #fff;display:none}
+.status-panel{flex:1;min-width:260px;background:#f8fafc;padding:1rem;border-radius:16px;border-left:4px solid #667eea}
+.status-title{font-weight:700;color:#374151;margin-bottom:.35rem}
+.status-text{color:#374151;line-height:1.5}
+.results{margin-top:1rem}
+.results h3{font-size:1.25rem;margin:.25rem 0 .6rem;color:#111827}
+pre.code{background:#111827;color:#f9fafb;padding:1rem;border-radius:10px;overflow:auto;font:13px/1.4 "Courier New",monospace}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem}
+.card{border:1px solid #e5e7eb;border-radius:12px;padding:.75rem;background:#fff}
+.card h4{margin:0 0 .25rem;font-size:1.05rem}
+.card .small{color:#6b7280;font-size:.9rem}
+.table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}
+.table th,.table td{padding:.6rem .7rem;border-bottom:1px solid #e5e7eb;font-size:.95rem;text-align:left}
+.table th{background:#f8fafc}
+.muted{color:#6b7280}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🐕 PawMatch</h1>
+      <p class="tagline">Find Your Perfect Canine Companion</p>
+      <div class="status-bar">
+        <span id="pill-api" class="pill warn">API: checking…</span>
+        <span id="pill-retrieve" class="pill warn">Retrieve: —</span>
+        <span id="pill-classifier" class="pill warn">Classifier: —</span>
+      </div>
+    </div>
+
+    <div class="main-card">
+      <div class="upload-section" id="dropzone">
+        <h2>Upload Dog Photo</h2>
+        <p class="muted">Select a clear JPG/PNG photo or drag & drop below</p>
+        <div class="upload-grid">
+          <div>
+            <div class="file-input-wrapper">
+              <input type="file" id="file" accept="image/*">
+              <label for="file" class="file-input-label">📷 Choose Photo</label>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-primary" id="btnRetrieve">🔍 Find Similar Dogs</button>
+              <button class="btn btn-secondary" id="btnPredict">🎯 Identify Breed</button>
+            </div>
+          </div>
+          <div class="dropzone" id="dzBox">
+            <strong>Drag & drop image here</strong>
+            <div class="muted" style="margin-top:.25rem">Or use the “Choose Photo” button</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <div class="preview-container">
+          <img id="preview" class="preview-image" alt="Dog preview">
+        </div>
+        <div class="status-panel">
+          <div class="status-title">Status</div>
+          <div id="status" class="status-text">Ready to analyze your dog photo 🐾</div>
+        </div>
+      </div>
+
+      <div class="results">
+        <h3>Results</h3>
+        <div id="renderArea"></div>
+        <pre id="raw" class="code" style="margin-top:.75rem;display:none"></pre>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ======= CONFIG =======
+const API_BASE = "http://127.0.0.1:8000";  
+
+
+// ======= DOM =======
+const fileInput   = document.getElementById("file");
+const preview     = document.getElementById("preview");
+const statusEl    = document.getElementById("status");
+const pillApi     = document.getElementById("pill-api");
+const pillRet     = document.getElementById("pill-retrieve");
+const pillCls     = document.getElementById("pill-classifier");
+const renderArea  = document.getElementById("renderArea");
+const rawPre      = document.getElementById("raw");
+const btnRetrieve = document.getElementById("btnRetrieve");
+const btnPredict  = document.getElementById("btnPredict");
+const dzBox       = document.getElementById("dzBox");
+
+// ======= Helpers =======
+function setPill(el, text, cls){ el.textContent = text; el.className = "pill " + cls; }
+function setStatus(text, ok){ statusEl.textContent = text; statusEl.style.color = (ok===false ? "#991b1b" : "#111827"); }
+function setLoading(btn, on){
+  if (on){ btn._old = btn.innerHTML; btn.innerHTML = '<span class="loading"></span>Processing…'; btn.disabled = true; }
+  else   { btn.innerHTML = btn._old || btn.innerHTML; btn.disabled = false; }
+}
+async function smartBody(res){
+  const ct = res.headers.get("content-type")||"";
+  const text = await res.text();
+  if (ct.includes("application/json")){
+    try { return {json: JSON.parse(text), text, isJson:true}; } catch {}
+  }
+  return {json:null, text, isJson:false};
+}
+function showPreview(file){
+  const url = URL.createObjectURL(file);
+  preview.src = url; preview.style.display = "block";
+}
+function ensureFile(){
+  const f = fileInput.files[0];
+  if (!f){ alert("Please choose or drop an image first."); return null; }
+  return f;
+}
+
+// ======= Drag & Drop =======
+["dragenter","dragover"].forEach(ev => dzBox.addEventListener(ev, e => {
+  e.preventDefault(); e.stopPropagation(); dzBox.classList.add("drag");
+}));
+["dragleave","drop"].forEach(ev => dzBox.addEventListener(ev, e => {
+  e.preventDefault(); e.stopPropagation(); dzBox.classList.remove("drag");
+}));
+dzBox.addEventListener("drop", e => {
+  if (e.dataTransfer && e.dataTransfer.files.length){
+    const f = e.dataTransfer.files[0];
+    fileInput.files = e.dataTransfer.files;
+    showPreview(f);
+    setStatus("Photo uploaded! Ready to analyze 📸", true);
+  }
+});
+
+// ======= File change =======
+fileInput.addEventListener("change", () => {
+  const f = fileInput.files[0]; if (!f) return;
+  showPreview(f);
+  setStatus("Photo uploaded! Ready to analyze 📸", true);
+});
+
+// ======= Health check =======
+async function checkHealth(){
+  setPill(pillApi, "API: checking…", "warn");
+  try{
+    const r = await fetch(API_BASE + "/health", {cache:"no-store"});
+    const body = await smartBody(r);
+    if (!r.ok || !body.isJson) throw new Error("Health failed");
+    const h = body.json;
+    setPill(pillApi, "API: online", "ok");
+    setPill(pillRet, h.has_retrieve ? "Retrieve: ready" : "Retrieve: off", h.has_retrieve ? "ok":"err");
+    setPill(pillCls, h.has_classifier ? "Classifier: ready" : "Classifier: not loaded", h.has_classifier ? "ok":"warn");
+  }catch(e){
+    setPill(pillApi, "API: offline", "err");
+    setPill(pillRet, "Retrieve: —", "warn");
+    setPill(pillCls, "Classifier: —", "warn");
+  }
+}
+checkHealth();
+
+// ======= Renderers (no template literals) =======
+function renderRetrieve(json){
+  renderArea.innerHTML = "";
+  rawPre.style.display = "none";
+
+  if (!json || !json.top1){
+    rawPre.textContent = JSON.stringify(json, null, 2);
+    rawPre.style.display = "block";
+    return;
+  }
+
+  const wrap = document.createElement("div");
+  wrap.className = "cards";
+
+  json.top5.forEach(function(it, idx){
+    const c = document.createElement("div");
+    c.className = "card";
+
+    const h4 = document.createElement("h4");
+    h4.textContent = "#" + (idx+1) + " • ID " + it.label;
+
+    const sm = document.createElement("div");
+    sm.className = "small";
+    sm.textContent = "Cosine similarity";
+
+    const val = document.createElement("div");
+    val.style.fontWeight = "700";
+    val.style.marginTop = ".25rem";
+    val.textContent = (Number(it.similarity).toFixed(4));
+
+    c.appendChild(h4);
+    c.appendChild(sm);
+    c.appendChild(val);
+    wrap.appendChild(c);
+  });
+
+  renderArea.appendChild(wrap);
+}
+
+function renderPredict(json){
+  renderArea.innerHTML = "";
+  rawPre.style.display = "none";
+
+  if (!json || !json.top1){
+    rawPre.textContent = JSON.stringify(json, null, 2);
+    rawPre.style.display = "block";
+    return;
+  }
+
+  const header = document.createElement("div");
+  header.style.marginBottom = ".5rem";
+  const pct = (Number(json.top1.prob) * 100).toFixed(2);
+  header.innerHTML = "<strong>Top-1:</strong> " + json.top1.label + " • " + pct + "%";
+  renderArea.appendChild(header);
+
+  const tbl = document.createElement("table");
+  tbl.className = "table";
+  tbl.innerHTML =
+    "<thead><tr><th>Rank</th><th>Label</th><th>Probability</th></tr></thead>" +
+    "<tbody></tbody>";
+  const tb = tbl.querySelector("tbody");
+
+  json.top5.forEach(function(t, i){
+    const tr = document.createElement("tr");
+    const p = (Number(t.prob) * 100).toFixed(2) + "%";
+    tr.innerHTML = "<td>" + (i+1) + "</td><td>" + t.label + "</td><td>" + p + "</td>";
+    tb.appendChild(tr);
+  });
+
+  renderArea.appendChild(tbl);
+}
+
+// ======= Requests =======
+async function send(endpoint, btn, renderer){
+  const f = ensureFile(); if (!f) return;
+
+  const fd = new FormData();
+  fd.append("file", f, f.name);
+
+  setLoading(btn, true);
+  setStatus("Analyzing your dog photo… 🔍");
+
+  try{
+    const res  = await fetch(API_BASE + endpoint, {method:"POST", body: fd});
+    const body = await smartBody(res);
+
+    rawPre.textContent = body.text || "";
+    rawPre.style.display = body.text ? "block" : "none";
+
+    if (!res.ok){
+      setStatus("Error: HTTP " + res.status + " " + res.statusText + " ❌", false);
+      renderArea.innerHTML = "";
+      return;
+    }
+    if (!body.isJson){
+      setStatus("Unexpected non-JSON response ❌", false);
+      renderArea.innerHTML = "";
+      return;
+    }
+
+    setStatus("Analysis complete! ✅", true);
+    renderer(body.json);
+  }catch(err){
+    console.error(err);
+    setStatus("Connection error – check if Flask is running ⚠️", false);
+    renderArea.innerHTML = "";
+  }finally{
+    setLoading(btn, false);
+    checkHealth();
+  }
+}
+
+btnRetrieve.addEventListener("click", function(){ send("/retrieve", btnRetrieve, renderRetrieve); });
+btnPredict .addEventListener("click", function(){ send("/predict",  btnPredict,  renderPredict ); });
+</script>
+</body>
+</html>

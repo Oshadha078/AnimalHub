@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Animal AI – Domestic Animal Hub</title>
+
+  <!-- Meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    :root{
+      /* Domestic Animal Hub palette */
+      --brand-a:#1b7f5f;
+      --brand-b:#0c5c8a;
+      --brand-c:#0c4d96;
+      --ink:#1f2b3a;
+      --muted:#eaf2ff;
+    }
+    body{
+      min-height:100vh;
+      margin:0;
+      background:
+        radial-gradient(1200px 500px at 80% 10%, rgba(255,255,255,.06), transparent 60%),
+        linear-gradient(135deg, var(--brand-a) 0%, var(--brand-b) 60%, var(--brand-c) 100%);
+      color:#fff;
+      font-family:'Lato',sans-serif;
+      display:flex;
+      flex-direction:column;
+    }
+    .navbar{
+      background:rgba(255,255,255,.95);
+      border-bottom:3px solid #bcdcff;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 16px rgba(0,0,0,.06);
+    }
+    .navbar .navbar-brand{
+      font-family:'Playfair Display',serif;
+      color:var(--ink);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .navbar .nav-link{ color:var(--brand-b); font-weight:600; }
+    .hero{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:3rem 1rem;
+      text-align:center;
+    }
+    .panel{
+      background:#ffffff;
+      color:var(--ink);
+      border:1px solid rgba(12,92,138,.15);
+      border-radius:18px;
+      padding:2rem 2rem 1.5rem;
+      max-width:820px;
+      width:100%;
+      box-shadow:0 18px 48px rgba(0,0,0,.18);
+    }
+    h1{
+      font-family:'Playfair Display',serif;
+      font-weight:700;
+      margin:0 0 .5rem;
+    }
+    .lead{ color:#243447; opacity:.9; }
+    .btn-open{
+      background:linear-gradient(135deg, var(--brand-a), var(--brand-b));
+      color:#fff;font-weight:700;
+      border:none;border-radius:12px;padding:.8rem 1.25rem;
+      box-shadow:0 10px 24px rgba(12,92,138,.35);
+      transition:transform .15s, box-shadow .15s;
+    }
+    .btn-open:hover{ transform:translateY(-2px); box-shadow:0 14px 30px rgba(12,92,138,.45); }
+    footer{
+      text-align:center;color:#9fb0c3;
+      background:#101b27;
+      padding:1rem 0 1.25rem;
+      font-size:.95rem;
+    }
+  </style>
+</head>
+<body>
+
+ 
+  <nav class="navbar navbar-expand-lg py-2">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" ">
+        <i class="fas fa-paw" style="color:#20c997"></i>
+        Domestic Animal Hub
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <section class="hero">
+    <div class="panel">
+      <h1>🐾 Animal AI Assistant</h1>
+      <p class="lead mb-3">
+        Ask anything about pets — breeds, care, posting a listing, or how to buy safely.
+      </p>
+
+      <!-- Removed “Logged in as …” chip -->
+      <button id="openTeaBot" class="btn btn-open mt-1">
+        <i class="fas fa-comments me-2"></i>Open Chat
+      </button>
+      <p class="mt-3 mb-0" style="color:#51647a">
+        Tip: You can also use the floating launcher in the corner anytime.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    © <script>document.write(new Date().getFullYear())</script> Domestic Animal Hub
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+  <!-- BotPenguin widget (keep exactly one) -->
+ <script id="messenger-widget-b" src="https://cdn.botpenguin.com/website-bot.js" defer>68b86fc5313ee1e5c83b03b1,68b86f4df69639ff8ec220bd</script>
+
+
+  <!-- Open widget on button click -->
+  <script>
+    window.addEventListener('load', function () {
+      var btn = document.getElementById('openTeaBot');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        if (window.BotPenguin && typeof window.BotPenguin.openChat === 'function') {
+          window.BotPenguin.openChat();
+        } else if (typeof window.BotPenguin === 'function') {
+          window.BotPenguin('open');
+        } else {
+          document.addEventListener('botpenguinWidgetReady', function(){
+            if (window.BotPenguin && window.BotPenguin.openChat) window.BotPenguin.openChat();
+          }, { once:true });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

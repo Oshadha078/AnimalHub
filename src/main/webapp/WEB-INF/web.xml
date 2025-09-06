@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0"
+         metadata-complete="true">
+
+  <display-name>AnimalHub</display-name>
+
+  <welcome-file-list>
+    <welcome-file>views/login.jsp</welcome-file>
+  </welcome-file-list>
+
+  <!-- AUTH -->
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>SignupServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.SignupServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SignupServlet</servlet-name>
+    <url-pattern>/SignupServlet</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.LogoutServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/LogoutServlet</url-pattern>
+  </servlet-mapping>
+
+  <!-- PUBLIC ANIMALS -->
+  <servlet>
+    <servlet-name>AnimalServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.AnimalServlet</servlet-class>
+    <multipart-config>
+      <max-file-size>5242880</max-file-size>
+      <max-request-size>20971520</max-request-size>
+      <file-size-threshold>0</file-size-threshold>
+    </multipart-config>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AnimalServlet</servlet-name>
+    <url-pattern>/animals/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ImageServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.ImageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ImageServlet</servlet-name>
+    <url-pattern>/image</url-pattern>
+  </servlet-mapping>
+
+  <!-- ADMIN -->
+  <servlet>
+    <servlet-name>AdminLoginServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.admin.AdminLoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminLoginServlet</servlet-name>
+    <url-pattern>/AdminLoginServlet</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AdminDashboardServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.admin.AdminDashboardServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminDashboardServlet</servlet-name>
+    <url-pattern>/admin/dashboard</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AdminUsersServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.admin.AdminUsersServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminUsersServlet</servlet-name>
+    <url-pattern>/admin/users</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AdminAnimalsServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.admin.AdminAnimalsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminAnimalsServlet</servlet-name>
+    <url-pattern>/admin/animals</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+  <servlet-name>AdminContentServlet</servlet-name>
+  <servlet-class>com.domesticanimalhub.controller.admin.AdminContentServlet</servlet-class>
+  <multipart-config>
+    <max-file-size>5242880</max-file-size>        <!-- 5 MB -->
+    <max-request-size>20971520</max-request-size> <!-- 20 MB -->
+    <file-size-threshold>0</file-size-threshold>
+  </multipart-config>
+</servlet>
+<servlet-mapping>
+  <servlet-name>AdminContentServlet</servlet-name>
+  <url-pattern>/admin/content</url-pattern>
+</servlet-mapping>
+
+<servlet>
+  <servlet-name>ContentImageServlet</servlet-name>
+  <servlet-class>com.domesticanimalhub.controller.admin.ContentImageServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ContentImageServlet</servlet-name>
+  <url-pattern>/content-image</url-pattern>
+</servlet-mapping>
+
+
+  <servlet>
+    <servlet-name>AdminComplaintListServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.complaint.AdminComplaintListServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminComplaintListServlet</servlet-name>
+    <url-pattern>/admin/complaints</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AdminComplaintUpdateServlet</servlet-name>
+    <servlet-class>com.domesticanimalhub.controller.complaint.AdminComplaintUpdateServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminComplaintUpdateServlet</servlet-name>
+    <url-pattern>/admin/complaints/update</url-pattern>
+  </servlet-mapping>
+
+  <!-- FILTERS -->
+  <filter>
+    <filter-name>AuthFilter</filter-name>
+    <filter-class>com.domesticanimalhub.controller.AuthFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/user/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+
+  <!-- ERRORS -->
+  <error-page>
+    <error-code>404</error-code>
+    <location>/views/error404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/views/error500.jsp</location>
+  </error-page>
+
+</web-app>
